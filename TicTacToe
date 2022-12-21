@@ -1,0 +1,373 @@
+import java.util.Scanner;
+
+public class TicTacToe {
+
+    public static byte play() {
+        char firstMove = 'X';
+        byte[][] grid = {{1, 1, 1}, {1, 1, 1}, {1, 1, 1}};
+        byte winner;
+        byte player = Utils.playerAsByte(firstMove);
+        short coordinates;
+
+        for (byte i = 0; i < 9; i++) {
+            coordinates = Utils.getUserCoordinates();
+            Utils.setInGrid(grid, coordinates, player);
+            Utils.outputGrid(grid);
+            winner = Utils.isWinner(grid);
+            Utils.winnerAnnouncement(winner);
+            if (winner == 2) {
+                return 2;
+            } else if (winner == 3) {
+                return 3;
+            }
+            player = Utils.playerChange(player);
+        }
+        System.out.println("/// DRAW ///");
+        return 1;
+    }
+    public static byte play(char who, int difficulty) {
+        byte[][] grid = {{1, 1, 1}, {1, 1, 1}, {1, 1, 1}};
+        byte winner;
+        byte player = 2;
+        short coordinates;
+
+        for (byte i = 0; i < 9; i++) {
+            Utils.enterAnnouncement(player);
+            if (player == Utils.playerAsByte(who)) {
+                coordinates = Utils.getUserCoordinates();
+            } else {
+                if (difficulty == 1) {
+                    coordinates = Utils.generateRandomCoordinates(grid);
+                } else if (difficulty == 2) {
+                    coordinates = Utils.coordinatesByMediumAI(grid, Utils.playerAsByte(who));
+                } else if (difficulty == 3) {
+                    coordinates = Utils.coordinatesBySmartAI(grid, Utils.playerAsByte(who));
+                } else {
+                    return -1;
+                }
+            }
+            Utils.setInGrid(grid, coordinates, player);
+            Utils.outputGrid(grid);
+            winner = Utils.isWinner(grid);
+            Utils.winnerAnnouncement(winner);
+            if (winner == 2) {
+                return 2;
+            } else if (winner == 3) {
+                return 3;
+            }
+            player = Utils.playerChange(player);
+        }
+        System.out.println();
+        System.out.println("/// DRAW ///");
+        return 1;
+    }
+    public static byte play(int difficulty) {
+        byte[][] grid = {{1, 1, 1}, {1, 1, 1}, {1, 1, 1}};
+        byte winner;
+        char firstMove = 'X';
+        byte player = Utils.playerAsByte(firstMove);
+        short coordinates;
+
+        for (byte i = 0; i < 9; i++) {
+            Utils.enterAnnouncement(player);
+            if (difficulty == 1) {
+                coordinates = Utils.generateRandomCoordinates(grid);
+            } else if (difficulty == 2) {
+                coordinates = Utils.coordinatesByMediumAI(grid, Utils.playerAsByte(firstMove));
+            } else if (difficulty == 3) {
+                coordinates = Utils.coordinatesBySmartAI(grid, Utils.playerAsByte(firstMove));
+            } else {
+                return -1;
+            }
+            System.out.println(coordinates);
+            Utils.setInGrid(grid, coordinates, player);
+            Utils.outputGrid(grid);
+            winner = Utils.isWinner(grid);
+            Utils.winnerAnnouncement(winner);
+            if (winner == 2) {
+                return 2;
+            } else if (winner == 3) {
+                return 3;
+            }
+            player = Utils.playerChange(player);
+        }
+        System.out.println();
+        System.out.println("/// DRAW ///");
+        return 1;
+    }
+    public static class Utils {
+        public static byte isWinner(byte[][] grid) {
+            switch (grid[0][0] * grid[1][1] * grid[2][2]) { //1
+                case 8 -> {
+                    return 2;
+                }
+                case 27 -> {
+                    return 3;
+                }
+            }
+            switch (grid[0][0] * grid[0][1] * grid[0][2]) { //2
+                case 8 -> {
+                    return 2;
+                }
+                case 27 -> {
+                    return 3;
+                }
+            }
+            switch (grid[1][0] * grid[1][1] * grid[1][2]) { //3
+                case 8 -> {
+                    return 2;
+                }
+                case 27 -> {
+                    return 3;
+                }
+            }
+            switch (grid[2][0] * grid[2][1] * grid[2][2]) { //4
+                case 8 -> {
+                    return 2;
+                }
+                case 27 -> {
+                    return 3;
+                }
+            }
+            switch (grid[0][0] * grid[1][0] * grid[2][0]) { //5
+                case 8 -> {
+                    return 2;
+                }
+                case 27 -> {
+                    return 3;
+                }
+            }
+            switch (grid[0][1] * grid[1][1] * grid[2][1]) { //6
+                case 8 -> {
+                    return 2;
+                }
+                case 27 -> {
+                    return 3;
+                }
+            }
+            switch (grid[0][2] * grid[1][2] * grid[2][2]) { //7
+                case 8 -> {
+                    return 2;
+                }
+                case 27 -> {
+                    return 3;
+                }
+            }
+            switch (grid[0][2] * grid[1][1] * grid[2][0]) { //8
+                case 8 -> {
+                    return 2;
+                }
+                case 27 -> {
+                    return 3;
+                }
+            }
+            return 1;
+        }
+        public static void outputGrid(byte[][] grid) {
+            for (int i = 0; i < 3; i++) {
+                for (int j = 0; j < 3; j++) {
+                    if (grid[i][j] == 1) {
+                        System.out.print("/ ");
+                    } else if (grid[i][j] == 2) {
+                        System.out.print("X ");
+                    } else {
+                        System.out.print("0 ");
+                    }
+                }
+                System.out.println();
+            }
+        }
+        public static char getPlayerName(byte player) {
+            if (player == 2) {
+                return 'X';
+            } else {
+                return '0';
+            }
+        }
+        public static short getUserCoordinates() {
+            Scanner scanner = new Scanner(System.in);
+            return scanner.nextShort();
+        }
+        public static void enterAnnouncement(byte player) {
+            System.out.println("Enter coordinates: " + getPlayerName(player));
+        }
+        public static void setInGrid(byte[][] grid, short coordinates, byte player) {
+            grid[coordinates / 10][coordinates % 10] = player;
+        }
+        public static byte playerChange(byte player) {
+            if (player == 2) {
+                return 3;
+            } else {
+                return 2;
+            }
+        }
+        public static byte playerAsByte(char playerName) {
+            if (playerName == 'X') {
+                return 2;
+            } else {
+                return 3;
+            }
+        }
+        public static void winnerAnnouncement(byte winner) {
+            if (winner == 2) {
+                System.out.println();
+                System.out.println("/// X WON ///");
+            } else if (winner == 3) {
+                System.out.println();
+                System.out.println(" ///0 WON ///");
+            }
+        }
+        public static short generateRandomCoordinates(byte[][] grid) {
+            byte fstNum = (byte) (Math.random() * 3);
+            byte scdNum = (byte) (Math.random() * 3);
+
+            while (grid[fstNum][scdNum] != 1) {
+                fstNum = (byte) (Math.random() * 3);
+                scdNum = (byte) (Math.random() * 3);
+            }
+
+            return (short) (10 * fstNum + scdNum);
+        }
+        public static short coordinatesByUtilsAI(byte[][] grid, byte player) {
+            if (grid[1][1] == player) {
+                if (grid[0][0] == 1) {
+                    return 0;
+                }
+                if (grid[2][2] == 1) {
+                    return 22;
+                }
+                if (grid[0][2] == 1) {
+                    return 2;
+                }
+                if (grid[2][0] == 1) {
+                    return 20;
+                }
+            }
+            if (grid[1][1] == 1) {
+                return 11;
+            }
+            return generateRandomCoordinates(grid);
+        }
+        public static short coordinatesByMediumAI(byte[][] grid, byte player) {
+            player = playerChange(player);
+            short condition = (short) (player * player);
+            if (grid[0][0] * grid[1][1] * grid[2][2] == condition) { //1
+                for (byte i = 0; i < 3; i++) {
+                    if (grid[i][i] == 1) {
+                        return (short) (11 * i);
+                    }
+                }
+            }
+            if (grid[0][0] * grid[0][1] * grid[0][2] == condition) { //2
+                for (byte i = 0; i < 3; i++) {
+                    if (grid[0][i] == 1) {
+                        return i;
+                    }
+                }
+            }
+            if (grid[1][0] * grid[1][1] * grid[1][2] == condition) { //3
+                for (byte i = 0; i < 3; i++) {
+                    if (grid[1][i] == 1) {
+                        return (short) (10 + i);
+                    }
+                }
+            }
+            if (grid[2][0] * grid[2][1] * grid[2][2] == condition) { //4
+                for (byte i = 0; i < 3; i++) {
+                    if (grid[2][i] == 1) {
+                        return (short) (20 + i);
+                    }
+                }
+            }
+            if (grid[0][0] * grid[1][0] * grid[2][0] == condition) { //5
+                for (byte i = 0; i < 3; i++) {
+                    if (grid[i][0] == 1) {
+                        return (short) (10 * i);
+                    }
+                }
+            }
+            if (grid[0][1] * grid[1][1] * grid[2][1] == condition) { //6
+                for (byte i = 0; i < 3; i++) {
+                    if (grid[i][1] == 1) {
+                        return (short) (10 * i + 1);
+                    }
+                }
+            }
+            if (grid[0][2] * grid[1][2] * grid[2][2] == condition) { //7
+                for (byte i = 0; i < 3; i++) {
+                    if (grid[i][2] == 1) {
+                        return (short) (10 * i + 2);
+                    }
+                }
+            }
+            if (grid[0][2] * grid[1][1] * grid[2][0] == condition) { //8
+                for (byte i = 0; i < 3; i++) {
+                    if (grid[i][2 - i] == 1) {
+                        return (short) (9 * i + 2);
+                    }
+                }
+            }
+            return coordinatesByUtilsAI(grid, playerChange(player));
+        }
+        public static short coordinatesBySmartAI(byte[][] grid, byte player) {
+            short condition = (short) (player * player);
+            if (grid[0][0] * grid[1][1] * grid[2][2] == condition) { //1
+                for (byte i = 0; i < 3; i++) {
+                    if (grid[i][i] == 1) {
+                        return (short) (11 * i);
+                    }
+                }
+            }
+            if (grid[0][0] * grid[0][1] * grid[0][2] == condition) { //2
+                for (byte i = 0; i < 3; i++) {
+                    if (grid[0][i] == 1) {
+                        return i;
+                    }
+                }
+            }
+            if (grid[1][0] * grid[1][1] * grid[1][2] == condition) { //3
+                for (byte i = 0; i < 3; i++) {
+                    if (grid[1][i] == 1) {
+                        return (short) (10 + i);
+                    }
+                }
+            }
+            if (grid[2][0] * grid[2][1] * grid[2][2] == condition) { //4
+                for (byte i = 0; i < 3; i++) {
+                    if (grid[2][i] == 1) {
+                        return (short) (20 + i);
+                    }
+                }
+            }
+            if (grid[0][0] * grid[1][0] * grid[2][0] == condition) { //5
+                for (byte i = 0; i < 3; i++) {
+                    if (grid[i][0] == 1) {
+                        return (short) (10 * i);
+                    }
+                }
+            }
+            if (grid[0][1] * grid[1][1] * grid[2][1] == condition) { //6
+                for (byte i = 0; i < 3; i++) {
+                    if (grid[i][1] == 1) {
+                        return (short) (10 * i + 1);
+                    }
+                }
+            }
+            if (grid[0][2] * grid[1][2] * grid[2][2] == condition) { //7
+                for (byte i = 0; i < 3; i++) {
+                    if (grid[i][2] == 1) {
+                        return (short) (10 * i + 2);
+                    }
+                }
+            }
+            if (grid[0][2] * grid[1][1] * grid[2][0] == condition) { //8
+                for (byte i = 0; i < 3; i++) {
+                    if (grid[i][2 - i] == 1) {
+                        return (short) (9 * i + 2);
+                    }
+                }
+            }
+            return coordinatesByMediumAI(grid, player);
+        }
+    }
+}
